@@ -1,41 +1,39 @@
-import type { MetaFunction } from "@remix-run/node";
-
-export const meta: MetaFunction = () => {
-  return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
-  ];
-};
+import { useWindowVirtualizer } from '@tanstack/react-virtual';
 
 export default function Index() {
+  const virtualizer = useWindowVirtualizer({
+    count: 1,
+    estimateSize: () => 95,
+    overscan: 2,
+  });
+
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
-      <h1>Welcome to Remix</h1>
-      <ul>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/blog"
-            rel="noreferrer"
+    <div
+      style={{
+        position: 'relative',
+        width: '100%',
+        height: virtualizer.getTotalSize(),
+      }}
+    >
+      {virtualizer.getVirtualItems().map((item) => {
+        return (
+          <div
+            key={item.key}
+            style={{
+              position: 'absolute',
+              width: '100%',
+              height: item.size,
+              transform: `translateY(${item.start}px)`,
+            }}
           >
-            15m Quickstart Blog Tutorial
-          </a>
-        </li>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/jokes"
-            rel="noreferrer"
-          >
-            Deep Dive Jokes App Tutorial
-          </a>
-        </li>
-        <li>
-          <a target="_blank" href="https://remix.run/docs" rel="noreferrer">
-            Remix Docs
-          </a>
-        </li>
-      </ul>
+            {render(item.index)}
+          </div>
+        );
+      })}
     </div>
   );
+}
+
+function render(index: number) {
+  return <div>{index}</div>;
 }
